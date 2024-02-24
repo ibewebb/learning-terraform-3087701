@@ -14,6 +14,7 @@ data "aws_ami" "app_ami" {
   owners = [var.ami_filter.owner]
 }
 
+
 module "blog_vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -32,12 +33,12 @@ module "blog_vpc" {
 
 module "blog_autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
-  version = "7.4.0"
+  version = "6.5.2"
 
   name = "${var.environment.name}-blog"
 
-  min_size            = var.asg_min_size
-  max_size            = var.asg_max_size
+  min_size            = var.asg_min
+  max_size            = var.asg_max
   vpc_zone_identifier = module.blog_vpc.public_subnets
   target_group_arns   = module.blog_alb.target_group_arns
   security_groups     = [module.blog_sg.security_group_id]
@@ -47,7 +48,7 @@ module "blog_autoscaling" {
 
 module "blog_alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.7.0"
+  version = "~> 6.0"
 
   name = "${var.environment.name}-blog-alb"
 
@@ -75,7 +76,7 @@ module "blog_alb" {
   ]
 
   tags = {
-    Environment = "var.environment.name"
+    Environment = var.environment.name
   }
 }
 
